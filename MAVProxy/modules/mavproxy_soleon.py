@@ -55,6 +55,7 @@ class SoleonModule(mp_module.MPModule):
         # commands
         self.add_command('soleon', self.cmd_soleon, "soleon dashboard")
         self.add_command('sprayrate', self.cmd_spray_rate, "soleon sprayrate")
+        self.add_command('spraylua', self.cmd_spray_rate_lua, "soleon sprayrate")
 
 
     def cmd_spray_rate(self, args):
@@ -80,6 +81,30 @@ class SoleonModule(mp_module.MPModule):
             0,  # param6
             0)  # param7
 
+    def cmd_spray_rate_lua(self, args):
+        usage = "Usage: spraylua <the rate in %/100mSec>"
+
+        if len(args) == 0:
+            print(usage)
+            return
+
+        self.spray_rate = float(args[0])
+
+        # mavlink messages
+        self.master.mav.command_long_send(
+            self.settings.target_system,  # target_system
+            self.settings.target_component,  # target_component
+            mavutil.mavlink.MAV_CMD_DO_SEND_SCRIPT_MESSAGE,  # ID of command to send
+            0,  # confirmation
+            0,  # param1:
+            self.spray_rate,  # param2:
+            0,  # param3
+            0,  # param4
+            0,  # param5
+            0,  # param6
+            0)  # param7
+
+
     def cmd_soleon(self, args):
         if len(args) != 1:
             print (self.usage())
@@ -96,7 +121,8 @@ class SoleonModule(mp_module.MPModule):
         '''Show help on command line options'''
 
         return  "Usage: soleon <status>  --> show status information\n" \
-                "       sprayrate <x.x>  --> spray rate in % per 100mSec"
+                "       sprayrate <x.x>  --> spray rate in % per 100mSec [MAV_CMD_SO_SYSMODE]\n"\
+                "       spraylua  <x.x>  --> spray rate in % per 100mSec [MAV_CMD_DO_SEND_SCRIPT_MESSAGE]"
 
     def status_so(self):
         '''Returns information about the soleon sprayer state'''
