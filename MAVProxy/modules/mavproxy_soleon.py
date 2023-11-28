@@ -140,10 +140,10 @@ class SoleonModule(mp_module.MPModule):
 
         if type == 'SO_STATUS':
            # print (m);
-           self.status_timestamp = m.time_boot_ms
-           self.status_level = m.soleon_value
+           self.status_timestamp = m.timestamp
+           self.status_level = m.filllevel
 
-           self._msg_list.append(LiquidLevel(m.time_boot_ms, m.soleon_value))
+           self._msg_list.append(LiquidLevel(m.timestamp, m.filllevel))
 
 
     def idle_task(self):
